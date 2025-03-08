@@ -2,6 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const authRoutes = require("./routes/authRoutes");
+const scheduleRoutes = require("./routes/scheduleRoutes");
+const holidayRoutes = require("./routes/holidayRoutes");
+const salaryRoutes = require("./routes/salaryRoutes");
 
 dotenv.config();
 
@@ -26,7 +30,19 @@ app.get("/", (req, res) => {
   res.send("API funcionando");
 });
 
+// Usar rutas de autenticación (¡antes de app.listen()!)
+app.use("/api/auth", authRoutes);
+
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+// Usar rutas de horarios
+app.use("/api/schedules", scheduleRoutes);
+
+// Usar rutas de días festivos
+app.use("/api/holidays", holidayRoutes);
+
+// Usar rutas de sueldos
+app.use("/api/salaries", salaryRoutes);

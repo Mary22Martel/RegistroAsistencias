@@ -1,22 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../../styles.css";
 
 const JustificationModal = ({ date, onClose, onSubmit }) => {
   const [justificationType, setJustificationType] = useState("tardanza");
+  const [shift, setShift] = useState(""); // Nuevo estado para "mañana" o "tarde"
   const [message, setMessage] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [startHour, setStartHour] = useState("");
-  const [endHour, setEndHour] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    console.log("📅 Abriendo modal para la fecha:", date);
-  }, [date]);
 
   const handleSubmit = () => {
     if (!onSubmit || typeof onSubmit !== "function") {
-      console.error("❌ ERROR: `onSubmit` no está definido o no es una función.");
-      setError("Error interno. No se puede enviar la justificación.");
+      console.error("❌ ERROR: onSubmit no está definido o no es una función.");
+      setError("Hubo un problema interno. No se puede enviar la justificación.");
       return;
     }
 
@@ -25,17 +20,17 @@ const JustificationModal = ({ date, onClose, onSubmit }) => {
       return;
     }
 
-    if (justificationType === "ausente" && (!startHour || !endHour)) {
-      setError("⚠️ Por favor, selecciona el periodo de ausencia.");
+    if (justificationType === "tardanza" && !shift) {
+      setError("⚠️ Por favor, selecciona si la tardanza es en la mañana o en la tarde.");
       return;
     }
 
     const justificationData = {
       date: date?.date || date,
-      status: justificationType,
+      status: justificationType, // "tardanza" o "ausente"
+      shift, // "mañana" o "tarde"
       message,
       photo,
-      absencePeriod: justificationType === "ausente" ? { start: startHour, end: endHour } : null,
     };
 
     console.log("📤 Enviando justificación:", justificationData);
@@ -47,37 +42,43 @@ const JustificationModal = ({ date, onClose, onSubmit }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Justificar - {new Date(date?.date || date).toLocaleDateString()}</h2>
-        <p><strong>Estado:</strong> {date.status || "sin registro"}</p>
+        <p>
+          <strong>Estado:</strong> {date.status || "sin registro"}
+        </p>
         {date.status === "sin registro" && (
           <p style={{ color: "orange" }}>⚠️ No hay asistencia registrada, pero puedes justificar.</p>
         )}
 
-        {error && <p className="error-message">{error}</p>}
-
-        {/* Formulario */}
+        {/* 🔹 Selección entre tardanza o ausencia */}
         <label>Tipo de Justificación:</label>
         <select value={justificationType} onChange={(e) => setJustificationType(e.target.value)}>
           <option value="tardanza">Tardanza</option>
           <option value="ausente">Ausencia</option>
         </select>
 
-        <label>Mensaje de Justificación:</label>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
-
-        {justificationType === "ausente" && (
+        {/* 🔹 Seleccionar si la tardanza es en la mañana o tarde */}
+        {justificationType === "tardanza" && (
           <>
-            <label>Periodo de Ausencia:</label>
-            <div className="time-selection">
-              <input type="time" value={startHour} onChange={(e) => setStartHour(e.target.value)} />
-              <input type="time" value={endHour} onChange={(e) => setEndHour(e.target.value)} />
-            </div>
+            <label>Turno de la tardanza:</label>
+            <select value={shift} onChange={(e) => setShift(e.target.value)}>
+              <option value="">-- Seleccionar turno --</option>
+              <option value="mañana">Mañana</option>
+              <option value="tarde">Tarde</option>
+            </select>
           </>
         )}
 
+        {/* 🔹 Mensaje obligatorio */}
+        <label>Mensaje de Justificación:</label>
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
+
+        {/* 🔹 Subir foto opcional */}
         <label>Subir Foto:</label>
         <input type="file" onChange={(e) => setPhoto(e.target.files[0])} />
 
-        {/* Botones */}
+        {error && <p className="error-message">{error}</p>}
+
+        {/* 🔹 Botones */}
         <div className="modal-buttons">
           <button onClick={handleSubmit} className="btn btn-primary">Enviar</button>
           <button onClick={onClose} className="btn btn-secondary">Cancelar</button>

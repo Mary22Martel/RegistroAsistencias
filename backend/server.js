@@ -6,6 +6,9 @@ const authRoutes = require("./routes/authRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
 const holidayRoutes = require("./routes/holidayRoutes");
 const salaryRoutes = require("./routes/salaryRoutes");
+const justificationRoutes = require("./routes/justificationRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
+const Attendance = require("./models/Attendance");
 
 dotenv.config();
 
@@ -33,11 +36,6 @@ app.get("/", (req, res) => {
 // Usar rutas de autenticación (¡antes de app.listen()!)
 app.use("/api/auth", authRoutes);
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
-
 // Usar rutas de horarios
 app.use("/api/schedules", scheduleRoutes);
 
@@ -46,3 +44,25 @@ app.use("/api/holidays", holidayRoutes);
 
 // Usar rutas de sueldos
 app.use("/api/salaries", salaryRoutes);
+
+// Justificaciones 
+app.use("/api/justifications", justificationRoutes); 
+
+// Asistencias 
+app.use("/api/attendance", attendanceRoutes);
+
+//asistencias
+// router.get("/my-status", protect, async (req, res) => {
+//   try {
+//     const attendance = await Attendance.find({ userId: req.user.id });
+//     res.status(200).json(attendance);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error al obtener asistencia", error: error.message });
+//   }
+// });
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+

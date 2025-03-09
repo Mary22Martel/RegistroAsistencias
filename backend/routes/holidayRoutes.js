@@ -1,13 +1,11 @@
 const express = require("express");
-const { addHoliday, getHolidays } = require("../controllers/holidayController");
 const { protect, isAdmin } = require("../middleware/authMiddleware");
+const { createHoliday, getHolidays, deleteHoliday } = require("../controllers/holidayController");
 
 const router = express.Router();
 
-// Agregar día festivo (solo admin)
-router.post("/", protect, isAdmin, addHoliday);
-
-// Obtener días festivos
+router.post("/", protect, isAdmin, createHoliday);
 router.get("/", protect, getHolidays);
+router.delete("/:id", protect, isAdmin, deleteHoliday);
 
 module.exports = router;
